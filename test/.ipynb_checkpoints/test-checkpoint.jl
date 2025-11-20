@@ -1,4 +1,5 @@
 include("../src/plotting_tools.jl")
+include("../src/geometry_tools.jl")
 
 fig = EmptyFig()
 p = [.4,.3]
@@ -16,5 +17,7 @@ X = [
 ]
 
 plot!(X[:,1], X[:,2], label = false, color = :black)
+
+display(PointsetAngles(X))
 
 fig

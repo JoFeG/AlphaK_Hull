@@ -21,7 +21,12 @@ function PlotLine!(
         color = :red::Symbol,
         len = 10::Real
 )
-    θ = atan(q[2] - p[2], q[1] - p[1])
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+
+    x = q[1] - p[1]
+    y = q[2] - p[2]
+    θ = atan(y, x)
+    
     PlotLine!(p, θ, forwardmark = forwardmark, color = color, len = len)
 end
 
@@ -32,6 +37,8 @@ function PlotLine!(
         color = :red::Symbol,
         len = 10::Real
 )
+    length(p) == 2 || DimensionMismatch()
+    
     scatter!(
         [p[1]], 
         [p[2]], 
@@ -39,7 +46,6 @@ function PlotLine!(
         markerstrokewidth = 0, 
         label = false
     )
-    
     plot!(
         [p[1] - len*cos(θ), p[1] + len*cos(θ)], 
         [p[2] - len*sin(θ), p[2] + len*sin(θ)], 
@@ -63,7 +69,12 @@ function PlotRay!(
         color = :red::Symbol,
         len = 10::Real
 )
-    θ = atan(q[2] - p[2], q[1] - p[1])
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+    
+    x = q[1] - p[1]
+    y = q[2] - p[2]
+    θ = atan(y, x)
+    
     PlotRay!(p, θ, color = color, len = len)
 end
 
@@ -72,7 +83,9 @@ function PlotRay!(
         θ::Real;
         color = :red::Symbol,
         len = 10::Real
-) 
+)
+    length(p) == 2 || DimensionMismatch()
+    
     scatter!(
         [p[1]], 
         [p[2]], 
@@ -97,7 +110,12 @@ function PlotHalfPlane!(
         alpha = 0.08,
         len = 10::Real
 )
-    θ = atan(q[2] - p[2], q[1] - p[1])
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+    
+    x = q[1] - p[1]
+    y = q[2] - p[2]
+    θ = atan(y, x)
+    
     PlotHalfPlane!(p, θ, side = side, color = color, alpha = alpha, len = len)
 end
 
@@ -110,6 +128,8 @@ function PlotHalfPlane!(
         alpha = 0.08,
         len = 10::Real
 )
+    length(p) == 2 || DimensionMismatch()
+    
     if side == :right
         X = [
             p[1]+len*cos(θ)          p[2]+len*sin(θ)
@@ -127,6 +147,7 @@ function PlotHalfPlane!(
             p[1]+len*cos(θ)          p[2]+len*sin(θ)
         ]
     end
+    
     plot!(
         X[:,1],
         X[:,2],
@@ -136,6 +157,4 @@ function PlotHalfPlane!(
         fillcolor = color,
         label = false
     )
-    
-
 end
