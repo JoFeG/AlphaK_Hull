@@ -8,18 +8,18 @@ function LineLovaszNextPivot(
 
     # Nearest point FORWARD SIDE (right ray)
     p_angs_r = mod.(p_angs .- θ, 2π)
-    p_angs_r[isnan.(p_angs_r)] .= Inf
+    p_angs_r[isnan.(p_angs_r)] .= Inf 
     min_p_angs_r = minimum(p_angs_r)
 
     # Nearest point BACKWRD SIDE (left ray)
     p_angs_l = mod.(p_angs .- (θ + π), 2π)
     p_angs_l[isnan.(p_angs_l)] .= Inf
     min_p_angs_l = minimum(p_angs_l)
-
+    
     if min_p_angs_r < min_p_angs_l
-        return argmin(min_p_angs_r)
+        return argmin(p_angs_r)
     elseif min_p_angs_l < min_p_angs_r
-        return argmin(min_p_angs_l)
+        return argmin(p_angs_l)
     else
         error("Double bump: not yet implemented!
             p = $p
@@ -50,7 +50,31 @@ function LineLovasz(
     ps = [p] # Vector of apex index at each step
     
     while step <= maxiter
-        # I'M HERE ...
+        step > 1 ? excluded = [ps[end-1]] : excluded = [ps[end]] 
+        q = LineLovaszNextPivot(p, θ, angles[p,:], excluded = excluded)
+        β = angles[p, q]
+
+        # CHECK THIS LATER, AFTER IMPLEMENTING FOR (α,k)
+        # IS RIGHT BUMP EQUIVALENT TO STRICT DIVIDER? (WRITE AS A LEMMA AND PROVE)
+        if 0 < β - θ < π
+            θ = β
+            push!(ds, 1)
+        else
+            θ = mod(β - π, 2π)
+            push!(ds, 0)
+        end
+        
+        push!(θs, θ)
+        push!(ps, q)
+        
+        p = q
+
+        ## Termination condition 
+        if step == 1 || θs[end-1] < θ
+            step += 1
+        else
+            return θs[1:end-1], ps[1:end-1], ds
+        end
     end
 
     return θs, ps, ds 
