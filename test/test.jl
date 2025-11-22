@@ -2,51 +2,37 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-# fig = EmptyFig()
-# p = [.4,.3]
-# q = [.5,.7]
-# PlotLine!(p, q, forwardmark = true)
-# PlotHalfPlane!(p, q, side = :left)
-# PlotRay!([0,.5], -π/4, color = :blue)
-
-# X = [
-#     0 0
-#     1 0
-#     1 1
-#     0 1
-#     0 0
+# P = [
+#     .1  .45
+#     .25 .85
+#     .3  .15
+#     .75 .25
+#     .7  .5
+#     .8  .8
 # ]
 
-# plot!(X[:,1], X[:,2], label = false, color = :black)
+P = rand(20,2)
+k = 4
 
-# display(PointsetAngles(X))
+θs, ps, bs = LineLovasz(P, k)
 
-# fig
-
-P = [
-    .1  .45
-    .25 .85
-    .3  .15
-    .75 .25
-    .7  .5
-    .8  .8
-]
+N = length(ps)
 
 fig = EmptyFig()
 
-scatter!(
-    P[:,1],
-    P[:,2],
-    color = :black,
-    label = false,
-    markersize = 2
-)
-
-for i = 1:size(P)[1]
-    annotate!(P[i,1], P[i,2]-.04, text("$i", :black, :left, 6))
+for i=1:N
+    color = [:pink, :red]
+    PlotLine!(P[ps[i],:], θs[i], color = color[bs[i]+1])
 end
 
+PlotPointset!(P)
 display(fig)
 
-θs, ps, ds = LineLovasz(P,2)
+
+function foo(i) 
+    fig = EmptyFig()
+    PlotPointset!(P)
+    PlotLine!(P[ps[i],:], θs[i])
+    return fig
+end
 

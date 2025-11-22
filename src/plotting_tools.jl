@@ -17,7 +17,8 @@ end
 function PlotLine!(
         p::Vector{<:Real}, 
         q::Vector{<:Real}; 
-        forwardmark = false::Bool, 
+        forwardmark = false::Bool,
+        pointmark = false::Bool,
         color = :red::Symbol,
         len = 10::Real
 )
@@ -27,25 +28,28 @@ function PlotLine!(
     y = q[2] - p[2]
     θ = atan(y, x)
     
-    PlotLine!(p, θ, forwardmark = forwardmark, color = color, len = len)
+    PlotLine!(p, θ, forwardmark = forwardmark, pointmark = pointmark, color = color, len = len)
 end
 
 function PlotLine!(
         p::Vector{<:Real}, 
         θ::Real; 
-        forwardmark = false::Bool, 
+        forwardmark = false::Bool,
+        pointmark = false::Bool,
         color = :red::Symbol,
         len = 10::Real
 )
     length(p) == 2 || DimensionMismatch()
-    
-    scatter!(
-        [p[1]], 
-        [p[2]], 
-        color = color, 
-        markerstrokewidth = 0, 
-        label = false
-    )
+
+    if pointmark
+        scatter!(
+            [p[1]], 
+            [p[2]], 
+            color = color, 
+            markerstrokewidth = 0, 
+            label = false
+        )
+    end
     plot!(
         [p[1] - len*cos(θ), p[1] + len*cos(θ)], 
         [p[2] - len*sin(θ), p[2] + len*sin(θ)], 
@@ -65,7 +69,8 @@ end
 
 function PlotRay!(
         p::Vector{<:Real}, 
-        q::Vector{<:Real}; 
+        q::Vector{<:Real};
+        pointmark = false::Bool,
         color = :red::Symbol,
         len = 10::Real
 )
@@ -75,25 +80,27 @@ function PlotRay!(
     y = q[2] - p[2]
     θ = atan(y, x)
     
-    PlotRay!(p, θ, color = color, len = len)
+    PlotRay!(p, θ, pointmark = pointmark, color = color, len = len)
 end
 
 function PlotRay!(
         p::Vector{<:Real}, 
         θ::Real;
+        pointmark = false::Bool,
         color = :red::Symbol,
         len = 10::Real
 )
     length(p) == 2 || DimensionMismatch()
-    
-    scatter!(
-        [p[1]], 
-        [p[2]], 
-        color = color, 
-        markerstrokewidth = 0, 
-        label = false
-    )
-    
+
+    if pointmark
+        scatter!(
+            [p[1]], 
+            [p[2]], 
+            color = color, 
+            markerstrokewidth = 0, 
+            label = false
+        )
+    end
     plot!(
         [p[1], p[1] + len*cos(θ)], 
         [p[2], p[2] + len*sin(θ)], 
@@ -157,4 +164,29 @@ function PlotHalfPlane!(
         fillcolor = color,
         label = false
     )
+end
+
+function PlotPointset!(
+        P::Array{<:Real};
+        indices = true::Bool
+)
+    n, d = size(P)
+    d == 2 || DimensionMismatch("size(P) should be (n,2)")
+
+    scatter!(
+        P[:,1],
+        P[:,2],
+        color = :black,
+        label = false,
+        markersize = 2
+    )
+    if indices
+        for i = 1:n
+            annotate!(
+                P[i,1], 
+                P[i,2] - .015, 
+                text("$i", :black, :center, 8)
+            )
+        end
+    end
 end

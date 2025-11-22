@@ -11,7 +11,7 @@ function LineLovaszNextPivot(
     p_angs_r[isnan.(p_angs_r)] .= Inf 
     min_p_angs_r = minimum(p_angs_r)
 
-    # Nearest point BACKWRD SIDE (left ray)
+    # Nearest point BACKWARD SIDE (left ray)
     p_angs_l = mod.(p_angs .- (θ + π), 2π)
     p_angs_l[isnan.(p_angs_l)] .= Inf
     min_p_angs_l = minimum(p_angs_l)
@@ -44,7 +44,10 @@ function LineLovasz(
     # HERE WE ARE ASSUMING p IS NOT SPECIAL, FIX THAT CASE LATER.
     
     θs = zeros(Float64,0) # Vector of special dividers angles at each step
-    ds = zeros(Int64,0) # Vector of special divider type at each step (1 strict, 0 not) 
+    bs = zeros(Int64,0) # Vector of bump side: 0 BACKWARD bump (left), 1 FORWARD bump (right)
+    # CONJECTURE: ALL BACKWARD BUMPS GIVE NON-STRICT SPECIAL DIVIDERS  
+    # FACT: SOME FOWARD BUMPS GIVE STRICT DIVIDERS BUT NOT ALL
+    # CHECK FOR THE RULE; WRITE AS A LEMMA
     
     step = 1
     ps = [p] # Vector of apex index at each step
@@ -58,10 +61,10 @@ function LineLovasz(
         # IS RIGHT BUMP EQUIVALENT TO STRICT DIVIDER? (WRITE AS A LEMMA AND PROVE)
         if 0 < β - θ < π
             θ = β
-            push!(ds, 1)
+            push!(bs, 1)
         else
             θ = mod(β - π, 2π)
-            push!(ds, 0)
+            push!(bs, 0)
         end
         
         push!(θs, θ)
@@ -73,9 +76,9 @@ function LineLovasz(
         if step == 1 || θs[end-1] < θ
             step += 1
         else
-            return θs[1:end-1], ps[1:end-1], ds
+            return θs[1:end-1], ps[1:end-2], bs[1:end-1]
         end
     end
 
-    return θs, ps, ds 
+    return θs, ps[1:end-1], bs 
 end

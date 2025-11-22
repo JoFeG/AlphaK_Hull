@@ -73,9 +73,9 @@ function LineLovasz(
         if step == 1 || θs[end-1] < θ
             step += 1
         else
-            return θs[1:end-1], ps[1:end-1], ds
+            return θs[1:end-1], ps[1:end-2], ds[1:end-1]
         end
     end
 
-    return θs, ps, ds 
+    return θs, ps[1:end-1], ds 
 end
