@@ -11,7 +11,7 @@ include("../src/ak_hull.jl")
 #     .8  .8
 # ]
 
-P = rand(20,2)
+P = rand(50,2)
 k = 4
 
 θs, ps, bs = LineLovasz(P, k)

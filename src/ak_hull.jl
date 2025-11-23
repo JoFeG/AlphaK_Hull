@@ -31,14 +31,17 @@ end
 function LineLovasz(
         P::Array{<:Real},
         k::Integer;
-        maxiter = 1000::Integer
+        maxiter = 1000::Integer,
+        angles = Array{Real}(undef,0,0)::Array{<:Real}
 )
     n, d = size(P)
     d == 2 || DimensionMismatch("size(P) should be (n,2)")
     0 < k < ceil(n/2) || DomainError(k, "0 < k < ceil(n/2) is needed.")
 
     ## Initialization
-    angles = PointsetAngles(P)
+    if isempty(angles)
+        angles = PointsetAngles(P)
+    end
     θ = 0.0
     p = sortperm(P[:,2])[k] # Index of first apex 
     # HERE WE ARE ASSUMING p IS NOT SPECIAL, FIX THAT CASE LATER.

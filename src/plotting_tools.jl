@@ -114,7 +114,7 @@ function PlotHalfPlane!(
         q::Vector{<:Real}; 
         side = :right::Symbol,
         color = :gray::Symbol,
-        alpha = 0.08,
+        alpha = 0.08::Real,
         len = 10::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
@@ -158,7 +158,7 @@ function PlotHalfPlane!(
     plot!(
         X[:,1],
         X[:,2],
-        linewidth = 0,
+        linecolor = false,
         fill = 0,
         fillalpha = alpha,
         fillcolor = color,
@@ -168,6 +168,7 @@ end
 
 function PlotPointset!(
         P::Array{<:Real};
+        color = :black::Symbol,
         indices = true::Bool
 )
     n, d = size(P)
@@ -176,17 +177,20 @@ function PlotPointset!(
     scatter!(
         P[:,1],
         P[:,2],
-        color = :black,
+        color = color,
         label = false,
-        markersize = 2
+        markersize = 2,
+        markerstrokewidth = 0
     )
     if indices
         for i = 1:n
             annotate!(
                 P[i,1], 
                 P[i,2] - .015, 
-                text("$i", :black, :center, 8)
+                text("$i", color, :center, 8)
             )
         end
     end
 end
+
+
