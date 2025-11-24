@@ -1,7 +1,7 @@
 using Plots
 
-function EmptyFig(
-        lims = (-.01, 1.01), 
+function EmptyFig(;
+        lims = (-.1, 1.1), 
         size = (1200,1200)
 )
     fig = plot(

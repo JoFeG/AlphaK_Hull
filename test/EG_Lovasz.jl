@@ -11,7 +11,8 @@ include("../src/ak_hull.jl")
 #     .8  .8
 # ]
 
-P = rand(50,2)
+n = 40
+P = rand(n,2)
 k = 4
 
 θs, ps, bs = LineLovasz(P, k)
@@ -28,7 +29,6 @@ end
 PlotPointset!(P)
 display(fig)
 
-
 function foo(i) 
     fig = EmptyFig()
     PlotPointset!(P)
@@ -36,3 +36,10 @@ function foo(i)
     return fig
 end
 
+function boo()
+    N = length(ps)
+    for i = 1:N
+        display(foo(i))
+        sleep(1)
+    end
+end

@@ -20,7 +20,7 @@ function PlotKhullRes!(θs, ps, bs)
         X[:,2],
         linecolor = false,
         fill = 1,
-        fillalpha = 0.028,
+        fillalpha = 0.1,
         fillcolor = :black,
         label = false
     )
@@ -37,11 +37,11 @@ function PlotKhullRes!(θs, ps, bs)
 end
 
 
-n = 220
+n = 40
 P = rand(n,2)
 
 angles = PointsetAngles(P)
-fig = EmptyFig()
+fig = EmptyFig(lims = (0, 1))
 
 for k = ceil(Int64,n/2):-1:1
         
