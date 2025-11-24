@@ -14,6 +14,30 @@ function EmptyFig(;
     return fig
 end
 
+function PlotCapableArc!(
+        α::Real,
+        p::Vector{<:Real}, 
+        q::Vector{<:Real};
+        color = :red::Symbol,
+        linestyle = :dash
+)
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+    c = CapableArcCenter(p, q, α)
+    r = sqrt(sum((c - p).^2))
+    
+    x = q[1] - c[1]
+    y = q[2] - c[2]
+    θ_0 = atan(y, x)
+    θ = LinRange(θ_0, θ_0 + 2π - 2α, 60)
+        plot!(
+        c[1] .+ r*cos.(θ), 
+        c[2] .+ r*sin.(θ), 
+        color = color,
+        linestyle = linestyle,
+        label = false
+    )
+end
+
 function PlotLine!(
         p::Vector{<:Real}, 
         q::Vector{<:Real}; 

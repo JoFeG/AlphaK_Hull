@@ -1,3 +1,20 @@
+function CapableArcCenter(
+        p::Vector{<:Real}, 
+        q::Vector{<:Real},
+        α::Real
+)
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+    0 < α < π || DomainError(k, "0 < α < π is needed.")
+
+    if α == π/2
+        c = (p + q) / 2
+    else
+        c = (p + q) / 2 - [0 1;-1 0] * ((q - p) / (2tan(α)))
+    end
+
+    return c
+end
+
 function PointsetAngles(
         P::Array{<:Real};
         positive = true::Bool
@@ -15,7 +32,7 @@ function PointsetAngles(
                 β = atan(y, x)
                 
                 if positive
-                    β >= 0 ? angles[i, j] = β : angles[i, j] = β + 2π
+                    β ≥ 0 ? angles[i, j] = β : angles[i, j] = β + 2π
                 else
                     angles[i, j] = β    
                 end

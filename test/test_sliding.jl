@@ -2,29 +2,25 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-# n = 50
-# P = rand(n,2)
+using Random
+Random.seed!(1)
 
-P = [
-    .1  .45
-    .25 .85
-    .3  .15
-    .75 .25
-    .7  .5
-    .8  .8
-]
+n = 50
+P = rand(n,2)
 
 angles = PointsetAngles(P)
 
 α = 5π/6
-θ = mod(0 - α/2, 2π)
-p = 3
+θ = π/8
+p = 46
 
 q, b = ConeRotationNextPivot(p, α, θ, angles[p,:])
 
 fig = EmptyFig()
 
 PlotAlphaCone!(P[p,:], α, angles[p,q] + (-1)^b * α/2)
+
+b == 1 ? PlotCapableArc!(α, P[p,:], P[q,:]) : PlotCapableArc!(α, P[q,:], P[p,:])
 
 PlotPointset!(P)
 
