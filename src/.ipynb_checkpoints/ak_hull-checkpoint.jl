@@ -20,9 +20,9 @@ function ConeRotationNextPivot(
     min_p_angs_l = minimum(p_angs_l)
 
     if min_p_angs_r < min_p_angs_l
-        return argmin(p_angs_r), 0
+        return argmin(p_angs_r), 1
     elseif min_p_angs_l < min_p_angs_r
-        return argmin(p_angs_l), 1
+        return argmin(p_angs_l), 0
     else
         error("Double bump: not yet implemented!
             p = $p
@@ -53,9 +53,9 @@ function LineLovaszNextPivot(
     min_p_angs_l = minimum(p_angs_l)
     
     if min_p_angs_r < min_p_angs_l
-        return argmin(p_angs_r)
+        return argmin(p_angs_r), 1
     elseif min_p_angs_l < min_p_angs_r
-        return argmin(p_angs_l)
+        return argmin(p_angs_l), 0
     else
         error("Double bump: not yet implemented!
             p = $p
@@ -93,19 +93,13 @@ function LineLovasz(
     
     while step <= maxiter
         step > 1 ? excluded = [ps[end-1]] : excluded = [ps[end]] 
-        q = LineLovaszNextPivot(p, θ, angles[p,:], excluded = excluded)
+        q, b = LineLovaszNextPivot(p, θ, angles[p,:], excluded = excluded)
         β = angles[p, q]
 
-        # CHECK THIS LATER, AFTER IMPLEMENTING FOR (α,k)
-        # IS RIGHT BUMP EQUIVALENT TO STRICT DIVIDER? (WRITE AS A LEMMA AND PROVE)
-        if 0 < β - θ < π
-            θ = β
-            push!(bs, 1)
-        else
-            θ = mod(β - π, 2π)
-            push!(bs, 0)
-        end
+        # b == 1 ? θ = β : θ = mod(β - π, 2π)
+        θ = mod(β + (1 + (-1)^b) * π/2, 2π)
         
+        push!(bs, b)
         push!(θs, θ)
         push!(ps, q)
         

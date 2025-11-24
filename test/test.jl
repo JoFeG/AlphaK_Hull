@@ -27,7 +27,7 @@ PlotAlphaCone!(P[p,:], α, θ, color = :pink)
 
 q, b = ConeRotationNextPivot(p, α, θ, angles[p,:])
 
-PlotAlphaCone!(P[p,:], α, angles[p,q] - (-1)^b * α/2, color = :red)
+PlotAlphaCone!(P[p,:], α, angles[p,q] + (-1)^b * α/2, color = :red)
 
 PlotPointset!(P)
 

@@ -11,7 +11,7 @@ include("../src/ak_hull.jl")
 #     .8  .8
 # ]
 
-n = 40
+n = 20
 P = rand(n,2)
 k = 4
 
