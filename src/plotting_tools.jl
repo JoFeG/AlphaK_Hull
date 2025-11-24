@@ -1,7 +1,7 @@
 using Plots
 
 function EmptyFig(
-        lims = (-.2, 1.2), 
+        lims = (-.01, 1.01), 
         size = (1200,1200)
 )
     fig = plot(
@@ -179,7 +179,7 @@ function PlotPointset!(
         P[:,2],
         color = color,
         label = false,
-        markersize = 2,
+        markersize = 3,
         markerstrokewidth = 0
     )
     if indices
