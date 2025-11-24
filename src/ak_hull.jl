@@ -1,11 +1,47 @@
+function ConeRotationNextPivot(
+        p::Integer,
+        α::Real,
+        θ::Real, 
+        p_angs::Vector{<:Real}; 
+        excluded = Array{Integer}(undef,0)::Vector{<:Integer}
+)
+    if !isempty(excluded)
+        p_angs[excluded] .= Inf
+    end
+
+    # Nearest point FORWARD SIDE (right ray)
+    p_angs_r = mod.(p_angs .- (θ + α/2), 2π)
+    p_angs_r[isnan.(p_angs_r)] .= Inf 
+    min_p_angs_r = minimum(p_angs_r)
+
+    # Nearest point BACKWARD SIDE (left ray)
+    p_angs_l = mod.(p_angs .- (θ - α/2), 2π)
+    p_angs_l[isnan.(p_angs_l)] .= Inf
+    min_p_angs_l = minimum(p_angs_l)
+
+    if min_p_angs_r < min_p_angs_l
+        return argmin(p_angs_r), 0
+    elseif min_p_angs_l < min_p_angs_r
+        return argmin(p_angs_l), 1
+    else
+        error("Double bump: not yet implemented!
+            p = $p
+            θ = $θ
+            ")
+    end   
+end
+    
+
 function LineLovaszNextPivot(
         p::Integer, 
         θ::Real, 
         p_angs::Vector{<:Real}; 
-        excluded::Vector{<:Integer}
+        excluded = Array{Integer}(undef,0)::Vector{<:Integer}
 )
-    p_angs[excluded] .= Inf
-
+    if !isempty(excluded)
+        p_angs[excluded] .= Inf
+    end
+    
     # Nearest point FORWARD SIDE (right ray)
     p_angs_r = mod.(p_angs .- θ, 2π)
     p_angs_r[isnan.(p_angs_r)] .= Inf 

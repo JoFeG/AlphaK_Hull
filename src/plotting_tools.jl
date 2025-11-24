@@ -109,6 +109,38 @@ function PlotRay!(
     )
 end
 
+function PlotAlphaCone!(
+        p::Vector{<:Real},
+        α::Real,
+        θ::Real;
+        pointmark = false::Bool,
+        color = :red::Symbol,
+        len = 10::Real
+)
+    if pointmark
+        scatter!(
+            [p[1]], 
+            [p[2]], 
+            color = color, 
+            markerstrokewidth = 0, 
+            label = false
+        )
+    end
+
+    plot!(
+        [p[1], p[1] + len*cos(θ + α/2)], 
+        [p[2], p[2] + len*sin(θ + α/2)], 
+        color = color, 
+        label = false
+    )
+    plot!(
+        [p[1], p[1] + len*cos(θ - α/2)], 
+        [p[2], p[2] + len*sin(θ - α/2)], 
+        color = color, 
+        label = false
+    )
+end
+
 function PlotHalfPlane!(
         p::Vector{<:Real}, 
         q::Vector{<:Real}; 
