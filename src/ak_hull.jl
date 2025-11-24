@@ -1,3 +1,12 @@
+function ConeSlidingNextPivot(
+        p::Integer,
+        q::Integer,
+        α::Real, 
+        p_angs::Vector{<:Real}; 
+        excluded = Array{Integer}(undef,0)::Vector{<:Integer}        
+)
+end
+
 function ConeRotationNextPivot(
         p::Integer,
         α::Real,
@@ -94,6 +103,7 @@ function LineLovasz(
     while step <= maxiter
         step > 1 ? excluded = [ps[end-1]] : excluded = [ps[end]] 
         q, b = LineLovaszNextPivot(p, θ, angles[p,:], excluded = excluded)
+        # q, b = ConeRotationNextPivot(p, π, θ - π/2, angles[p,:], excluded = excluded)
         β = angles[p, q]
 
         # b == 1 ? θ = β : θ = mod(β - π, 2π)

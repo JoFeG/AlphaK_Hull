@@ -2,7 +2,7 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-n = 50
+n = 250
 P = rand(n,2)
 
 # P = [
@@ -27,8 +27,12 @@ PlotAlphaCone!(P[p,:], α, θ, color = :pink)
 
 q, b = ConeRotationNextPivot(p, α, θ, angles[p,:])
 
-PlotAlphaCone!(P[p,:], α, angles[p,q] + (-1)^b * α/2, color = :red)
+β = angles[p,q] 
 
-PlotPointset!(P)
+θ = β + (-1)^b * α/2
+
+PlotAlphaCone!(P[p,:], α, θ, color = :red)
+
+PlotPointset!(P, indices = false)
 
 fig
