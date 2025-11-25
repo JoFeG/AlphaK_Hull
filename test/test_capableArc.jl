@@ -2,15 +2,14 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-using Random
-Random.seed!(1)
+p = .8 * rand(2) .+ .1
+q = .8 * rand(2) .+ .1
+α = π * rand()
 
+# α = 5π/8
 
-
-α = 5π/8
-
-p = [0.5, 0.1]
-q = [0.1, 0.8]
+# p = [0.5, 0.1]
+# q = [0.1, 0.8]
 
 c = CapableArcCenter(α, p, q)
 
@@ -18,7 +17,7 @@ c = CapableArcCenter(α, p, q)
 
 
 r = sqrt(sum((c - p).^2))
-γ_0 = atan(p[2] - c[2], p[1] - c[1])
+γ_0 = atan(p - c)
 
 
 for γ in LinRange(γ_0, γ_0 + 2π - 2α - 0.001, 60)

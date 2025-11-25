@@ -25,9 +25,7 @@ function PlotCapableArc!(
     c = CapableArcCenter(α, p, q)
     r = sqrt(sum((c - p).^2))
     
-    x = p[1] - c[1]
-    y = p[2] - c[2]
-    θ_0 = atan(y, x)
+    θ_0 = atan(p - c)
     θ = LinRange(θ_0, θ_0 + 2π - 2α, 60)
         plot!(
         c[1] .+ r*cos.(θ), 
@@ -44,15 +42,13 @@ function PlotLine!(
         forwardmark = false::Bool,
         pointmark = false::Bool,
         color = :red::Symbol,
+        linestyle = :solid::Symbol,
         len = 10::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
-
-    x = q[1] - p[1]
-    y = q[2] - p[2]
-    θ = atan(y, x)
     
-    PlotLine!(p, θ, forwardmark = forwardmark, pointmark = pointmark, color = color, len = len)
+    θ = atan(q - p)
+    PlotLine!(p, θ, forwardmark = forwardmark, pointmark = pointmark, color = color, linestyle = linestyle, len = len)
 end
 
 function PlotLine!(
@@ -61,6 +57,7 @@ function PlotLine!(
         forwardmark = false::Bool,
         pointmark = false::Bool,
         color = :red::Symbol,
+        linestyle = :solid::Symbol,
         len = 10::Real
 )
     length(p) == 2 || DimensionMismatch()
@@ -77,7 +74,8 @@ function PlotLine!(
     plot!(
         [p[1] - len*cos(θ), p[1] + len*cos(θ)], 
         [p[2] - len*sin(θ), p[2] + len*sin(θ)], 
-        color = color, 
+        color = color,
+        linestyle = linestyle,
         label = false
     )
     if forwardmark
@@ -96,15 +94,13 @@ function PlotRay!(
         q::Vector{<:Real};
         pointmark = false::Bool,
         color = :red::Symbol,
+        linestyle = :solid::Symbol,
         len = 10::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
     
-    x = q[1] - p[1]
-    y = q[2] - p[2]
-    θ = atan(y, x)
-    
-    PlotRay!(p, θ, pointmark = pointmark, color = color, len = len)
+    θ = atan(q - p)
+    PlotRay!(p, θ, pointmark = pointmark, color = color, linestyle = linestyle, len = len)
 end
 
 function PlotRay!(
@@ -112,6 +108,7 @@ function PlotRay!(
         θ::Real;
         pointmark = false::Bool,
         color = :red::Symbol,
+        linestyle = :solid::Symbol,
         len = 10::Real
 )
     length(p) == 2 || DimensionMismatch()
@@ -129,6 +126,7 @@ function PlotRay!(
         [p[1], p[1] + len*cos(θ)], 
         [p[2], p[2] + len*sin(θ)], 
         color = color, 
+        linestyle = linestyle,
         label = false
     )
 end
@@ -175,10 +173,7 @@ function PlotHalfPlane!(
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
     
-    x = q[1] - p[1]
-    y = q[2] - p[2]
-    θ = atan(y, x)
-    
+    θ = atan(q - p)
     PlotHalfPlane!(p, θ, side = side, color = color, alpha = alpha, len = len)
 end
 

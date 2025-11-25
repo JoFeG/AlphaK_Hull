@@ -5,23 +5,41 @@ include("../src/ak_hull.jl")
 using Random
 Random.seed!(1)
 
-n = 50
-P = rand(n,2)
+n = 100
 
+P = [
+    .28 .22
+    .78 .59
+]
+
+p = 1
+q = 2
+
+α = 3π/4
+
+P = cat(P, rand(n - 2, 2), dims = 1)
 angles = PointsetAngles(P)
 
-α = 5π/6
-θ = π/8
-p = 46
-
-q, b = ConeRotationNextPivot(p, α, θ, angles[p,:])
 
 fig = EmptyFig()
+PlotPointset!(P[(1:n .!= p) .& (1:n .!= q), :], indices = false)
+PlotPointset!(P[(1:n .== p) .| (1:n .== q), :], color = :red, indices = false)
+annotate!(P[p,1] + .01, P[p,2] - .01, text("p", :red, :center, 8))
+annotate!(P[q,1] + .01, P[q,2] - .01, text("q", :red, :center, 8))
 
-PlotAlphaCone!(P[p,:], α, angles[p,q] + (-1)^b * α/2)
+PlotCapableArc!(α, P[p,:], P[q,:])
+PlotLine!(P[p,:], P[q,:], color = :red, linestyle = :dash)
+PlotRay!(P[q,:], angles[p,q] + π - α, color = :red, linestyle = :dash)
+PlotRay!(P[p,:], angles[p,q] + α, color = :red, linestyle = :dash)
 
-b == 1 ? PlotCapableArc!(α, P[p,:], P[q,:]) : PlotCapableArc!(α, P[q,:], P[p,:])
+C = CapableArcCenter(α, P[p,:], P[q,:])
+scatter!([C[1]],[C[2]], color = :red, label=false, markerstrokewidth = 0)
+r2 = sum((C - P[p,:]).^2)
+incirc = [sum((C - P[i,:]).^2) < r2 for i = 1:n]
 
-PlotPointset!(P)
+
+Aq = angles[q,:]
+include_q = (mod.(Aq[p] - π, 2π) .< Aq .< mod.(Aq[p] - α, 2π)) .| ((Aq[p] .< Aq .< mod.(Aq[p] - π - α, 2π)) .& incirc)
+PlotPointset!(P[include_q, :], indices = false, color = :orange)
 
 fig
