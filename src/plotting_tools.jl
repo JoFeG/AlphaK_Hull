@@ -22,11 +22,11 @@ function PlotCapableArc!(
         linestyle = :dash
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
-    c = CapableArcCenter(p, q, α)
+    c = CapableArcCenter(α, p, q)
     r = sqrt(sum((c - p).^2))
     
-    x = q[1] - c[1]
-    y = q[2] - c[2]
+    x = p[1] - c[1]
+    y = p[2] - c[2]
     θ_0 = atan(y, x)
     θ = LinRange(θ_0, θ_0 + 2π - 2α, 60)
         plot!(

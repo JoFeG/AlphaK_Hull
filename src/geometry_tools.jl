@@ -1,15 +1,15 @@
 function CapableArcCenter(
+        α::Real,
         p::Vector{<:Real}, 
-        q::Vector{<:Real},
-        α::Real
+        q::Vector{<:Real}
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
-    0 < α < π || DomainError(k, "0 < α < π is needed.")
+    0 < α < π || DomainError(α, "0 < α < π is needed.")
 
     if α == π/2
         c = (p + q) / 2
     else
-        c = (p + q) / 2 - [0 1;-1 0] * ((q - p) / (2tan(α)))
+        c = (p + q) / 2 - [0 1;-1 0] * ((p - q) / (2tan(α)))
     end
 
     return c
