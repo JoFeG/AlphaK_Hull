@@ -8,7 +8,7 @@ function ConeSlidingNextPivot(
         q_excluded = Array{Integer}(undef,0)::Vector{<:Integer}  
 )
     if !isempty(p_excluded)
-        p_angs[p_excluded] .= Inf
+        p_angs[p_excluded] .= Inf_r
     end
     if !isempty(q_excluded)
         q_angs[q_excluded] .= Inf
@@ -28,13 +28,11 @@ function ConeRotationNextPivot(
     end
 
     # Nearest point FORWARD SIDE (right ray)
-    p_angs_r = mod.(p_angs .- (θ + α/2), 2π)
-    p_angs_r[isnan.(p_angs_r)] .= Inf 
+    p_angs_r = pang.(p_angs .- (θ + α/2))
     min_p_angs_r = minimum(p_angs_r)
 
     # Nearest point BACKWARD SIDE (left ray)
-    p_angs_l = mod.(p_angs .- (θ - α/2), 2π)
-    p_angs_l[isnan.(p_angs_l)] .= Inf
+    p_angs_l = pang.(p_angs .- (θ - α/2))
     min_p_angs_l = minimum(p_angs_l)
 
     if min_p_angs_r < min_p_angs_l
@@ -61,13 +59,11 @@ function LineLovaszNextPivot(
     end
     
     # Nearest point FORWARD SIDE (right ray)
-    p_angs_r = mod.(p_angs .- θ, 2π)
-    p_angs_r[isnan.(p_angs_r)] .= Inf 
+    p_angs_r = pang.(p_angs .- θ)
     min_p_angs_r = minimum(p_angs_r)
 
     # Nearest point BACKWARD SIDE (left ray)
-    p_angs_l = mod.(p_angs .- (θ + π), 2π)
-    p_angs_l[isnan.(p_angs_l)] .= Inf
+    p_angs_l = pang.(p_angs .- (θ + π))
     min_p_angs_l = minimum(p_angs_l)
     
     if min_p_angs_r < min_p_angs_l
@@ -115,8 +111,8 @@ function LineLovasz(
         # q, b = ConeRotationNextPivot(p, π, θ - π/2, angles[p,:], excluded = excluded)
         β = angles[p, q]
 
-        # b == 1 ? θ = β : θ = mod(β - π, 2π)
-        θ = mod(β + (1 + (-1)^b) * π/2, 2π)
+        # b == 1 ? θ = β : θ = pang(β - π)
+        θ = pang(β + (1 + (-1)^b) * π/2)
         
         push!(bs, b)
         push!(θs, θ)

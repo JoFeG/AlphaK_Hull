@@ -5,6 +5,17 @@ function Base.atan(
     return atan(p[2],p[1])
 end
 
+function pang(
+        θ::Real
+)
+    θ_pos = mod(θ, 2π)
+    if isnan(θ_pos)
+        return Inf
+    else
+        return θ_pos
+    end
+end
+
 function CapableArcCenter(
         α::Real,
         p::Vector{<:Real}, 

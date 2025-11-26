@@ -220,7 +220,8 @@ end
 function PlotPointset!(
         P::Array{<:Real};
         color = :black::Symbol,
-        indices = true::Bool
+        indices = true::Bool,
+        markersize = 3::Integer
 )
     n, d = size(P)
     d == 2 || DimensionMismatch("size(P) should be (n,2)")
@@ -230,7 +231,7 @@ function PlotPointset!(
         P[:,2],
         color = color,
         label = false,
-        markersize = 3,
+        markersize = markersize,
         markerstrokewidth = 0
     )
     if indices
