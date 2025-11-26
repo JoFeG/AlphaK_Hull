@@ -53,6 +53,6 @@ for k = ceil(Int64,n/2):-1:1
 
 end
 
-# PlotPointset!(P, color = :red, indices = false)
+PlotPointset!(P, color = :red, indices = false)
     
 display(fig)

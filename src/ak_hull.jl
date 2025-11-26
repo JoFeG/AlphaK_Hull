@@ -13,7 +13,7 @@ function ConeSlidingNextPivot(
     if !isempty(q_excluded)
         q_angs[q_excluded] .= Inf
     end
-
+    ############# AQUI ESTOY!!
 end
 
 function ConeRotationNextPivot(

@@ -133,6 +133,19 @@ end
 
 function PlotAlphaCone!(
         p::Vector{<:Real},
+        q::Vector{<:Real},
+        α::Real,
+        θ::Real;
+        pointmark = false::Bool,
+        color = :red::Symbol,
+        len = 10::Real
+)
+    PlotLine!(p, θ + α/2, color = color)
+    PlotLine!(q, θ - α/2, color = color)
+end    
+
+function PlotAlphaCone!(
+        x::Vector{<:Real},
         α::Real,
         θ::Real;
         pointmark = false::Bool,
@@ -141,8 +154,8 @@ function PlotAlphaCone!(
 )
     if pointmark
         scatter!(
-            [p[1]], 
-            [p[2]], 
+            [x[1]], 
+            [x[2]], 
             color = color, 
             markerstrokewidth = 0, 
             label = false
@@ -150,14 +163,14 @@ function PlotAlphaCone!(
     end
 
     plot!(
-        [p[1], p[1] + len*cos(θ + α/2)], 
-        [p[2], p[2] + len*sin(θ + α/2)], 
+        [x[1], x[1] + len*cos(θ + α/2)], 
+        [x[2], x[2] + len*sin(θ + α/2)], 
         color = color, 
         label = false
     )
     plot!(
-        [p[1], p[1] + len*cos(θ - α/2)], 
-        [p[2], p[2] + len*sin(θ - α/2)], 
+        [x[1], x[1] + len*cos(θ - α/2)], 
+        [x[2], x[2] + len*sin(θ - α/2)], 
         color = color, 
         label = false
     )

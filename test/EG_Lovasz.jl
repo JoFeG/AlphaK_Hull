@@ -2,18 +2,18 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-# P = [
-#     .1  .45
-#     .25 .85
-#     .3  .15
-#     .75 .25
-#     .7  .5
-#     .8  .8
-# ]
+P = [
+    .1  .45
+    .25 .85
+    .3  .15
+    .75 .25
+    .7  .5
+    .8  .8
+]
 
-n = 20
-P = rand(n,2)
-k = 4
+n = 6
+# P = rand(n,2)
+k = 2
 
 θs, ps, bs = LineLovasz(P, k)
 

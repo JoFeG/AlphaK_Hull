@@ -2,7 +2,7 @@ include("../src/plotting_tools.jl")
 include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
-n = 250
+n = 50
 P = rand(n,2)
 
 # P = [
