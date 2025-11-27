@@ -139,9 +139,11 @@ function PlotAlphaCone!(
         pointmark = false::Bool,
         color = :red::Symbol,
         len = 10::Real
-)
-    PlotLine!(p, θ + α/2, color = color)
-    PlotLine!(q, θ - α/2, color = color)
+) 
+    a = (cos(θ-α/2)*(q[2]-p[2]) - sin(θ-α/2)*(q[1]-p[1]))/sin(α)
+    x = p + a*[cos(θ+α/2), sin(θ+α/2)]
+    PlotRay!(x, θ + α/2, color = color)
+    PlotRay!(x, θ - α/2, color = color)
 end    
 
 function PlotAlphaCone!(

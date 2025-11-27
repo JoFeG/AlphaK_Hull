@@ -5,7 +5,7 @@ include("../src/ak_hull.jl")
 using Random
 #Random.seed!(1)
 
-n = 20
+n = 200
 
 P = [
     .28 .22
@@ -15,7 +15,12 @@ P = [
 p =  rand(1:n)
 q =  rand(1:n)
 
-α = 3π/4
+println("p=$p q=$q")
+α = π * rand()
+
+
+if p≠q
+
 
 P = cat(P, rand(n - 2, 2), dims = 1)
 angles = PointsetAngles(P)
@@ -47,9 +52,10 @@ include_p = (α .< pang.(Ap .- Ap[q]) .< π) # .| ((pang(α - π) .< pang.(Ap .-
 ##############################################################################################
 
 PlotPointset!(P[include_q, :], indices = false, color = :green1, markersize = 5)
-PlotPointset!(P[include_p, :], indices = false, color = :blue) 
+PlotPointset!(P[include_p, :], indices = false, color = :cyan, markersize = 5) 
 
 θ = pang(angles[p,q] + α/2)
+println(θ)
 PlotAlphaCone!(P[p,:], α, θ, pointmark = true, color = :lightblue)
 
 
@@ -87,9 +93,14 @@ elseif i == 3
     θ = pang(angles[bump,q] + α/2)
 elseif i == 4
     bump = q
-    θ = pang(θ + α)
+    θ = pang(angles[p,q] + π - α/2)
 end
 
-PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :blue)
-println(bump)
+if i ≠ 4
+    PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :blue)
+else
+    PlotAlphaCone!(P[q,:], α, θ, color = :blue)
+end
+    println(bump)
 fig
+end
