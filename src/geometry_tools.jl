@@ -16,6 +16,25 @@ function pang(
     end
 end
 
+function PointAngleLinesInt(
+        p::Vector{<:Real}, 
+        α::Real,
+        q::Vector{<:Real},
+        β::Real
+)
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+
+    if α == β
+        v = [Inf, Inf]
+    else
+        a = sin(β) * (p[1] - q[1]) - cos(β) * (p[2] - q[2])
+        a = a / sin(α - β)
+        v = p + a * [cos(α), sin(α)] 
+    end
+
+    return v
+end
+
 function CapableArcCenter(
         α::Real,
         p::Vector{<:Real}, 
@@ -27,7 +46,7 @@ function CapableArcCenter(
     if α == π/2
         c = (p + q) / 2
     else
-        c = (p + q) / 2 - [0 1;-1 0] * ((p - q) / (2tan(α)))
+        c = (p + q) / 2 - [0 1;-1 0] * (p - q) / (2tan(α))
     end
 
     return c

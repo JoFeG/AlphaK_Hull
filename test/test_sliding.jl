@@ -5,7 +5,7 @@ include("../src/ak_hull.jl")
 using Random
 #Random.seed!(1)
 
-n = 200
+n = 10
 
 P = [
     .28 .22
