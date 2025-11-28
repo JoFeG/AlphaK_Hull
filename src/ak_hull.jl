@@ -1,19 +1,83 @@
+function ConeSlidingExcluded(
+        p::Integer,
+        q::Integer,
+        α::Real,
+        Ap::Vector{<:Real},
+        Aq::Vector{<:Real}; 
+)
+    # C = CapableArcCenter(α, P[p,:], P[q,:])
+    # r2 = sum((C - P[p,:]).^2)
+    # incirc = [sum((C - P[i,:]).^2) < r2 for i = 1:n]
+
+    # include_q = (α .< pang.(Aq[p] .- Aq) .< π) .| ((pang(π + α) .< pang.(Aq[p] .- Aq) .< 2π) .& incirc)
+    # include_p = (α .< pang.(Ap .- Ap[q]) .< π) .| ((pang(α - π) .< pang.(Ap .- Ap[q]) .< 2π) .& incirc)
+
+    # PlotCapableArc!(α, P[p,:], P[q,:])
+    # PlotLine!(P[p,:], P[q,:], color = :red, linestyle = :dash)
+    # PlotRay!(P[q,:], angles[p,q] + π - α, color = :red, linestyle = :dash)
+    # PlotRay!(P[p,:], angles[p,q] + α, color = :red, linestyle = :dash)
+    # scatter!([C[1]],[C[2]], color = :red, label=false, markerstrokewidth = 0)
+    # PlotPointset!(P[include_q, :], indices = false, color = :green1, markersize = 5)
+    # PlotPointset!(P[include_p, :], indices = false, color = :cyan, markersize = 5) 
+
+end
+
+
 function ConeSlidingNextPivot(
         p::Integer,
         q::Integer,
-        α::Real, 
+        α::Real,
+        θ::Real,
         p_angs::Vector{<:Real},
         q_angs::Vector{<:Real}; 
         p_excluded = Array{Integer}(undef,0)::Vector{<:Integer},  
         q_excluded = Array{Integer}(undef,0)::Vector{<:Integer}  
 )
     if !isempty(p_excluded)
-        p_angs[p_excluded] .= Inf_r
+        p_angs[p_excluded] .= Inf
     end
     if !isempty(q_excluded)
         q_angs[q_excluded] .= Inf
     end
-    ############# AQUI ESTOY!!
+
+    p_angs_l = pang.(p_angs .- (θ + α/2))
+    min_p_angs_l = minimum(p_angs_l)
+    
+    p_angs_r = pang.(p_angs .- (θ + α/2 + π))
+    min_p_angs_r = minimum(p_angs_r)
+    
+    q_angs_l = pang.(q_angs .- (θ - α/2 + π))
+    min_q_angs_l = minimum(q_angs_l)
+    
+    q_angs_r = pang.(q_angs .- (θ - α/2))
+    min_q_angs_r = minimum(q_angs_r)
+
+    ##### FOR TESTING #####
+    T = [min_p_angs_l,min_p_angs_r, min_q_angs_l, min_q_angs_r]
+    T = T[T .≠ Inf]
+    length(T) ≠ length(unique(T)) && print("MULTIPLE BUMP!!")
+    #######################
+    
+    i = argmin([
+                min_p_angs_l,
+                min_p_angs_r, 
+                min_q_angs_l, 
+                min_q_angs_r,
+                2π
+            ])
+    if i == 1
+        bump = argmin(p_angs_l)
+    elseif i == 2
+        bump = argmin(p_angs_r)
+    elseif i == 3
+        bump = argmin(q_angs_l)
+    elseif i == 4
+        bump = argmin(q_angs_r)
+    elseif i == 5
+        bump = q
+    end
+
+    return bump, i
 end
 
 function ConeRotationNextPivot(
@@ -27,24 +91,26 @@ function ConeRotationNextPivot(
         p_angs[excluded] .= Inf
     end
 
-    # Nearest point FORWARD SIDE (right ray)
-    p_angs_r = pang.(p_angs .- (θ + α/2))
+    p_angs_l = pang.(p_angs .- (θ + α/2))
+    min_p_angs_l = minimum(p_angs_l)
+        
+    p_angs_r = pang.(p_angs .- (θ - α/2))
     min_p_angs_r = minimum(p_angs_r)
 
-    # Nearest point BACKWARD SIDE (left ray)
-    p_angs_l = pang.(p_angs .- (θ - α/2))
-    min_p_angs_l = minimum(p_angs_l)
-
-    if min_p_angs_r < min_p_angs_l
-        return argmin(p_angs_r), 1
-    elseif min_p_angs_l < min_p_angs_r
-        return argmin(p_angs_l), 0
+    if min_p_angs_l < min_p_angs_r 
+        bump = argmin(p_angs_l)
+        i = 1
+    elseif min_p_angs_r < min_p_angs_l
+        bump = argmin(p_angs_r)
+        i = 2
     else
         error("Double bump: not yet implemented!
             p = $p
             θ = $θ
             ")
-    end   
+    end
+
+    return bump, i
 end
     
 
