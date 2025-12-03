@@ -17,6 +17,36 @@ end
 function PlotCapableArc!(
         α::Real,
         p::Vector{<:Real}, 
+        q::Vector{<:Real},
+        θ_0::Real,
+        θ_1::Real;
+        color = :red::Symbol,
+        linestyle = :dash
+)
+    length(p) == 2 && length(q) == 2 || DimensionMismatch()
+    c = CapableArcCenter(α, p, q)
+    r = sqrt(sum((c - p).^2))
+
+    x_0 = PointAngleLinesInt(p, θ_0 + α/2, q, θ_0 - α/2)  
+    x_1 = PointAngleLinesInt(p, θ_1 + α/2, q, θ_1 - α/2)
+    
+    β_0 = atan(x_0 - c) + 2π
+    β_1 = atan(x_1 - c) + 2π
+    
+    β = LinRange(β_0, β_1, 60)
+        plot!(
+        c[1] .+ r*cos.(β), 
+        c[2] .+ r*sin.(β), 
+        color = color,
+        linestyle = linestyle,
+        label = false
+    )
+end
+
+
+function PlotCapableArc!(
+        α::Real,
+        p::Vector{<:Real}, 
         q::Vector{<:Real};
         color = :red::Symbol,
         linestyle = :dash
@@ -25,11 +55,11 @@ function PlotCapableArc!(
     c = CapableArcCenter(α, p, q)
     r = sqrt(sum((c - p).^2))
     
-    θ_0 = atan(p - c)
-    θ = LinRange(θ_0, θ_0 + 2π - 2α, 60)
+    β_0 = atan(p - c)
+    β = LinRange(β_0, β_0 + 2π - 2α, 60)
         plot!(
-        c[1] .+ r*cos.(θ), 
-        c[2] .+ r*sin.(θ), 
+        c[1] .+ r*cos.(β), 
+        c[2] .+ r*sin.(β), 
         color = color,
         linestyle = linestyle,
         label = false

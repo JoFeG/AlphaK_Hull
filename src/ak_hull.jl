@@ -24,6 +24,7 @@ end
 
 
 function ConeSlidingNextPivot(
+        or::Integer, # Orientation shoul be 1 for counterclockwise, -1 for clockwise
         p::Integer,
         q::Integer,
         α::Real,
@@ -40,24 +41,26 @@ function ConeSlidingNextPivot(
         q_angs[q_excluded] .= Inf
     end
 
-    p_angs_l = pang.(p_angs .- (θ + α/2))
+
+    p_angs_l = pang.(or*(p_angs .- (θ + α/2)))
+    p_angs_r = pang.(or*(p_angs .- (θ + α/2 + π)))
+    q_angs_l = pang.(or*(q_angs .- (θ - α/2 + π)))
+    q_angs_r = pang.(or*(q_angs .- (θ - α/2)))
+
+    
     min_p_angs_l = minimum(p_angs_l)
-    
-    p_angs_r = pang.(p_angs .- (θ + α/2 + π))
     min_p_angs_r = minimum(p_angs_r)
-    
-    q_angs_l = pang.(q_angs .- (θ - α/2 + π))
     min_q_angs_l = minimum(q_angs_l)
-    
-    q_angs_r = pang.(q_angs .- (θ - α/2))
     min_q_angs_r = minimum(q_angs_r)
 
+
+    
     ##### FOR TESTING #####
     T = [min_p_angs_l,min_p_angs_r, min_q_angs_l, min_q_angs_r]
     T = T[T .≠ Inf]
     length(T) ≠ length(unique(T)) && print("MULTIPLE BUMP!!")
     #######################
-    
+
     i = argmin([
                 min_p_angs_l,
                 min_p_angs_r, 
@@ -98,11 +101,11 @@ function ConeRotationNextPivot(
     min_p_angs_r = minimum(p_angs_r)
 
     if min_p_angs_l < min_p_angs_r 
-        bump = argmin(p_angs_l)
-        i = 1
+        r = argmin(p_angs_l)
+        b = 1
     elseif min_p_angs_r < min_p_angs_l
-        bump = argmin(p_angs_r)
-        i = 2
+        r = argmin(p_angs_r)
+        b = 2
     else
         error("Double bump: not yet implemented!
             p = $p
@@ -110,7 +113,7 @@ function ConeRotationNextPivot(
             ")
     end
 
-    return bump, i
+    return r, b
 end
     
 

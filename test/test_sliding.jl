@@ -5,19 +5,19 @@ include("../src/ak_hull.jl")
 using Random
 #Random.seed!(1)
 
-n = 80
+n = 20
 
 P = [
     .28 .22
     .78 .59
 ]
 
-p = 1#  rand(1:n)
-q = 2# rand(1:n)
+p =   rand(1:n)
+q =  rand(1:n)
 
 println("p=$p q=$q")
-α = 1.5π/4# π * rand()
-
+α = π/2 + .1 # 
+α = π * rand()
 
 if p≠q
 
@@ -25,6 +25,16 @@ if p≠q
 P = cat(P, rand(n - 2, 2), dims = 1)
 angles = PointsetAngles(P)
 
+θ =  pang(angles[p,q] + .6π) 
+#θ = pang(angles[p,q] + .72π)
+o = rand([1,-1])
+    if o == 1
+        θ =  pang(angles[p,q] + α/2)
+        
+    elseif o == -1
+        θ =  pang(angles[q,p] - α/2)
+    end
+    
 
 fig = EmptyFig()
 PlotPointset!(P, indices = true)
@@ -45,20 +55,25 @@ incirc = [sum((C - P[i,:]).^2) < r2 for i = 1:n]
 
 ###### THIS NEEDS CHECKING AND A FORMAL WRITING! #############################################
 Aq = angles[q,:]
-include_q = (α .< pang.(Aq[p] .- Aq) .< π) .| ((pang(π + α) .< pang.(Aq[p] .- Aq) .< 2π) .& incirc)
-
-Ap = angles[p,:]
-include_p = (α .< pang.(Ap .- Ap[q]) .< π) .| ((pang(α - π) .< pang.(Ap .- Ap[q]) .< 2π) .& incirc)
+Ap = angles[p,:]    
+if o == 1    
+    include_q = (α .< pang.(Aq[p] .- Aq) .< pang(Aq[p] + α/2 - θ)) .| ((pang(π + α) .< pang.(Aq[p] .- Aq) .< pang(Aq[p] + α/2 - θ  + π)) .& incirc)
+    include_p = (pang(θ + α/2 - Ap[q]) .< pang.(Ap .- Ap[q]) .< π) .| ((pang(θ + α/2 - Ap[q] + π) .< pang.(Ap .- Ap[q]) .< 2π) .& incirc)    
+elseif o == -1
+    include_q = (pang(Aq[p] + α/2 - θ) .< pang.(Aq[p] .- Aq) .< π) .| ((pang(Aq[p] + α/2 - θ  + π) .< pang.(Aq[p] .- Aq) .< 2π) .& incirc)
+    include_p = (α .< pang.(Ap .- Ap[q]) .< pang(θ + α/2 - Ap[q])) .| ((pang(α - π) .< pang.(Ap .- Ap[q]) .< pang(θ + α/2 - Ap[q] + π)) .& incirc)    
+end
 ##############################################################################################
 
-PlotPointset!(P[include_q, :], indices = false, color = :green1, markersize = 5)
-PlotPointset!(P[include_p, :], indices = false, color = :cyan, markersize = 5) 
 
-θ = pang(angles[p,q] + π/2)
+PlotPointset!(P[include_p, :], indices = false, color = :cyan, markersize = 5) 
+PlotPointset!(P[include_q, :], indices = false, color = :blue, markersize = 3)
+
 println(θ)
 PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :lightblue)
 
 bump, i = ConeSlidingNextPivot(
+        o,
         p,
         q,
         α,
@@ -71,22 +86,29 @@ bump, i = ConeSlidingNextPivot(
 
 println("i=$i")
 if i == 1
+    θold = θ
     θ = pang(angles[p,bump] - α/2)
 elseif i == 2
+    θold = θ
     θ = pang(angles[bump,p] - α/2)
 elseif i == 3
+    θold = θ
     θ = pang(angles[bump,q] + α/2)
 elseif i == 4
+    θold = θ
     θ = pang(angles[q,bump] + α/2)
 elseif i == 5
+    θold = θ
     θ = pang(angles[p,q] + π - α/2)
 end
-
+    
+    
 if i ≠ 5
     PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :blue)
 else
     PlotAlphaCone!(P[q,:], α, θ, color = :blue)
 end
     println(bump)
+    PlotCapableArc!(α, P[p,:], P[q,:], θold, θ, color = :black, linestyle = :solid)
 fig
 end
