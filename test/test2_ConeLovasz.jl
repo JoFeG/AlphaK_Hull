@@ -15,12 +15,12 @@ function LineLovasz()
     
     α = 13π/16
     
-    θ = -α/2   
+    θ = pang(-α/2)   
     p = 11
     q = 0
     o = 0
     b = 0
-    i = 5
+    i = 0
     
     θs = [θ]
     ps = [p]
@@ -28,6 +28,19 @@ function LineLovasz()
     os = [o]
     bs = [b]
     is = [i]
+
+    state = :rotate
+    step = 0    
+    
+    println("
+step = $step
+            θ = $θ
+            p = $p
+            q = $q
+            o = $o
+            b = $b
+            i = $i
+nextstate = $state")
     
     fig = EmptyFig()
     PlotPointset!(P, indices = true)
@@ -35,32 +48,19 @@ function LineLovasz()
     display(fig)
     sleep(slp)
     
-    state = :rotate
-    step = 0
-    
-    while step ≤ 3
-        println("
-step = $step,  state = $state
-            θ = $θ
-            p = $p
-            q = $q
-            o = $o
-            b = $b
-            i = $i
-            ")
 
+    
+    while step ≤ 10
 ###### ROTATE STEP ###########################################################
-        if state == :rotate
+        if state == :rot p = 10
+            q = 10ate
             
-            q, b = ConeRotationNextPivot(p, α, θ, angles[p,:])
+            # CHEK HERE!!  excluded 
+            q, b = ConeRotationNextPivot(p, α, θ, angles[p,:], excluded = excluded)
             o = (-1)^b
             θ = pang(angles[p,q] + o * α/2)
             i = 0
             state = :slide
-            
-            PlotAlphaCone!(P[p,:], α, θ, color = :pink)
-            display(fig)
-            sleep(slp)
 ##############################################################################
             
 ###### SLIDE STEP ############################################################
@@ -68,7 +68,7 @@ step = $step,  state = $state
 
             C = CapableArcCenter(α, P[p,:], P[q,:], o = o)
             r² = sum((C - P[p,:]) .^ 2)
-            indisk = [sum((C - P[i,:]) .^ 2) < r² for i = 1:n]
+            indisk = [sum((C - P[j,:]) .^ 2) < r² for j = 1:n]
 
             Ap = angles[p,:]
             Aq = angles[q,:]
@@ -86,10 +86,36 @@ step = $step,  state = $state
             p_excluded =  (sector_1 .== false) .& (sector_2 .== false)
             q_excluded =  (sector_3 .== false) .& (sector_4 .== false)
 
+            ## CHECK HERE
+            try p_excluded[ps[end-1]] = true catch nothing end
+            try p_excluded[qs[end-1]] = true catch nothing end
+            try q_excluded[ps[end-1]] = true catch nothing end
+            try q_excluded[qs[end-1]] = true catch nothing end
+            
             r, i = ConeSlidingNextPivot(o, p, q, α, θ, Ap, Aq,
                     p_excluded = p_excluded,
                     q_excluded = q_excluded 
                 )
+
+            if i == 1
+                θ = pang(angles[p,r] - o * α/2)
+                p = r
+            elseif i == 2
+                θ = pang(angles[p,r] - o * α/2 + π)
+                p  = r
+            elseif i == 3
+                θ = pang(angles[q,r] + o * α/2 + π)
+                q = r
+            elseif i == 4
+                θ = pang(angles[q,r] + o * α/2)
+                q = r
+            elseif i == 5
+                θ = pang(angles[q,p] - o * α/2)
+                p = q
+                state = :rotate
+            end
+            b = 0
+            
         end
 ##############################################################################
         
@@ -101,8 +127,30 @@ step = $step,  state = $state
         push!(bs, b)
         push!(is, i)
 
+#### PLOTING #################################################################
+            println("
+step = $step
+            θ = $θ
+            p = $p
+            q = $q
+            o = $o
+            b = $b
+            i = $i
+nextstate = $state")
+        if (i == 0) | (i == 5)
+            PlotAlphaCone!(P[p,:], α, θ, color = :pink)
+        else
+            PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :pink)
+            ## FIX HERE
+            #PlotCapableArc!(α, P[ps[end-1],:], P[qs[end-1],:], θs[end-1], θ, color = :red, linestyle = :solid)
+        end
+        display(fig)
+        sleep(slp)
+
+##############################################################################
+
     end
     return θs, ps, qs, os, bs, is, fig
 end
 
-fig, θs, bs, os, is, ps, qs = LineLovasz()
+θs, ps, qs, os, bs, is, fig = LineLovasz()
