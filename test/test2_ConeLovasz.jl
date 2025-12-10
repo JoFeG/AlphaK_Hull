@@ -9,9 +9,10 @@ n = 16
 P = rand(n,2)
 angles = PointsetAngles(P)
 
+
 function LineLovasz()
     n = size(P)[1]
-    slp = 0
+    slp = 1
     
     α = 13π/16
     
