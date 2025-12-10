@@ -1,5 +1,5 @@
 function ConeSlidingNextPivot(
-        or::Integer, # Orientation shoul be 1 for counterclockwise, -1 for clockwise
+        o::Integer, # Orientation shoul be 1 for counterclockwise, -1 for clockwise
         p::Integer,
         q::Integer,
         α::Real,
@@ -17,45 +17,71 @@ function ConeSlidingNextPivot(
     end
 
 
-    p_angs_l = pang.(or*(p_angs .- (θ + α/2)))
-    p_angs_r = pang.(or*(p_angs .- (θ + α/2 + π)))
-    q_angs_l = pang.(or*(q_angs .- (θ - α/2 + π)))
-    q_angs_r = pang.(or*(q_angs .- (θ - α/2)))
-
-    
-    min_p_angs_l = minimum(p_angs_l)
-    min_p_angs_r = minimum(p_angs_r)
-    min_q_angs_l = minimum(q_angs_l)
-    min_q_angs_r = minimum(q_angs_r)
-
-
-    
-    ##### FOR TESTING #####
-    T = [min_p_angs_l,min_p_angs_r, min_q_angs_l, min_q_angs_r]
-    T = T[T .≠ Inf]
-    length(T) ≠ length(unique(T)) && print("MULTIPLE BUMP!!")
-    #######################
-
+    angs_sector_1 = pang.(o * (p_angs .- (θ + o * α/2)))
+    angs_sector_2 = pang.(o * (p_angs .- (θ + o * α/2 + π)))
+    angs_sector_3 = pang.(o * (q_angs .- (θ - o * α/2 + π)))
+    angs_sector_4 = pang.(o * (q_angs .- (θ - o * α/2)))
+    min_sector_1 = minimum(angs_sector_1)
+    min_sector_2 = minimum(angs_sector_2)
+    min_sector_3 = minimum(angs_sector_3)
+    min_sector_4 = minimum(angs_sector_4)
     i = argmin([
-                min_p_angs_l,
-                min_p_angs_r, 
-                min_q_angs_l, 
-                min_q_angs_r,
+                min_sector_1,
+                min_sector_2, 
+                min_sector_3, 
+                min_sector_4,
                 2π
             ])
     if i == 1
-        bump = argmin(p_angs_l)
+        r = argmin(angs_sector_1)
     elseif i == 2
-        bump = argmin(p_angs_r)
+        r = argmin(angs_sector_2)
     elseif i == 3
-        bump = argmin(q_angs_l)
+        r = argmin(angs_sector_3)
     elseif i == 4
-        bump = argmin(q_angs_r)
+        r = argmin(angs_sector_4)
     elseif i == 5
-        bump = q
+        r = q
     end
 
-    return bump, i
+    return r, i
+    
+    # p_angs_l = pang.(o*(p_angs .- (θ + α/2)))
+    # p_angs_r = pang.(o*(p_angs .- (θ + α/2 + π)))
+    # q_angs_l = pang.(o*(q_angs .- (θ - α/2 + π)))
+    # q_angs_r = pang.(o*(q_angs .- (θ - α/2)))
+    
+    # min_p_angs_l = minimum(p_angs_l)
+    # min_p_angs_r = minimum(p_angs_r)
+    # min_q_angs_l = minimum(q_angs_l)
+    # min_q_angs_r = minimum(q_angs_r)
+    
+    # ##### FOR TESTING #####
+    # T = [min_p_angs_l,min_p_angs_r, min_q_angs_l, min_q_angs_r]
+    # T = T[T .≠ Inf]
+    # length(T) ≠ length(unique(T)) && print("MULTIPLE BUMP!!")
+    # #######################
+
+    # i = argmin([
+    #             min_p_angs_l,
+    #             min_p_angs_r, 
+    #             min_q_angs_l, 
+    #             min_q_angs_r,
+    #             2π
+    #         ])
+    # if i == 1
+    #     bump = argmin(p_angs_l)
+    # elseif i == 2
+    #     bump = argmin(p_angs_r)
+    # elseif i == 3
+    #     bump = argmin(q_angs_l)
+    # elseif i == 4
+    #     bump = argmin(q_angs_r)
+    # elseif i == 5
+    #     bump = q
+    # end
+
+    # return bump, i
 end
 
 function ConeRotationNextPivot(
