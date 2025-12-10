@@ -11,7 +11,7 @@ angles = PointsetAngles(P)
 
 function LineLovasz()
     n = size(P)[1]
-    slp = 1
+    slp = 0
     
     α = 13π/16
     
@@ -50,7 +50,7 @@ nextstate = $state")
     
 
     
-    while step ≤ 15
+    while step ≤ 41
 ###### ROTATE STEP ###########################################################
         if state == :rotate
 
@@ -120,13 +120,6 @@ nextstate = $state")
         end
 ##############################################################################
         
-        step += 1          
-        push!(θs, θ)
-        push!(ps, p)
-        push!(qs, q)
-        push!(os, o)
-        push!(bs, b)
-        push!(is, i)
 
 #### PLOTING #################################################################
             println("
@@ -139,21 +132,23 @@ step = $step
             i = $i
 nextstate = $state")
         if i == 0
-            PlotAlphaCone!(P[p,:], α, θ, color = :pink)
-        elseif i == 5
-            #PlotAlphaCone!(P[p,:], α, θ, color = :pink)
-            #PlotCapableArc!(α, P[ps[end-1],:], P[qs[end-1],:], o = o, color = :red, linestyle = :solid)
-            #PlotCapableArc!(α, P[ps[end-1],:], P[qs[end-1],:], θs[end-1], θ, o = o, color = :red, linestyle = :solid)
+        elseif (i == 5) & is[end] == 0
+            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = :red, linestyle = :solid)
         else
-            #PlotAlphaCone!(P[p,:], P[q,:], α, θ, color = :pink)
-            #PlotCapableArc!(α, P[ps[end-1],:], P[qs[end-1],:], o = o, color = :pink, linestyle = :solid)
-            #PlotCapableArc!(α, P[ps[end-1],:], P[qs[end-1],:], θs[end-1], θ, o = o, color = :red, linestyle = :solid)
+            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = :red, linestyle = :solid)
         end
         display(fig)
         sleep(slp)
 
 ##############################################################################
 
+        step += 1          
+        push!(θs, θ)
+        push!(ps, p)
+        push!(qs, q)
+        push!(os, o)
+        push!(bs, b)
+        push!(is, i)
     end
     return θs, ps, qs, os, bs, is, fig
 end

@@ -31,10 +31,11 @@ function PlotCapableArc!(
     x_0 = PointAngleLinesInt(p, θ_0 + o * α/2, q, θ_0 - o * α/2)  
     x_1 = PointAngleLinesInt(p, θ_1 + o * α/2, q, θ_1 - o * α/2)
     
-    β_0 = atan(x_0 - c) + 2π
-    β_1 = atan(x_1 - c) + 2π
-    
+    β_0 = pang(atan(x_0 - c))
+    β_1 = pang(atan(x_1 - c))
+
     β = LinRange(β_0, β_1, 60)
+    
     plot!(
         c[1] .+ r*cos.(β), 
         c[2] .+ r*sin.(β), 
