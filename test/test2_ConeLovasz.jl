@@ -12,7 +12,7 @@ angles = PointsetAngles(P)
 
 function LineLovasz()
     n = size(P)[1]
-    slp = 1
+    slp = 0
     
     α = 13π/16
     
@@ -48,10 +48,10 @@ nextstate = $state")
     PlotAlphaCone!(P[p,:], α, θ, color = :pink)
     display(fig)
     sleep(slp)
+    COLOR = [:red,:green,:blue]
+    COLORCOUNT = 1
     
-
-    
-    while step ≤ 41
+    while step ≤ 44
 ###### ROTATE STEP ###########################################################
         if state == :rotate
 
@@ -90,9 +90,9 @@ nextstate = $state")
 
             ## CHECK HERE
             try p_excluded[ps[end-1]] = true catch nothing end
-            try p_excluded[qs[end-1]] = true catch nothing end
-            try q_excluded[ps[end-1]] = true catch nothing end
-            try q_excluded[qs[end-1]] = true catch nothing end
+            #try p_excluded[qs[end-1]] = true catch nothing end
+            #try q_excluded[ps[end-1]] = true catch nothing end
+            #try q_excluded[qs[end-1]] = true catch nothing end
 
             r, i = ConeSlidingNextPivot(o, p, q, α, θ, Ap, Aq,
                     p_excluded = p_excluded,
@@ -133,10 +133,12 @@ step = $step
             i = $i
 nextstate = $state")
         if i == 0
-        elseif (i == 5) & is[end] == 0
-            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = :red, linestyle = :solid)
+        elseif (i == 5) & (is[end] == 0) ## CHECK HERE
+            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
+            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
         else
-            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = :red, linestyle = :solid)
+            PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
+            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
         end
         display(fig)
         sleep(slp)
@@ -151,10 +153,10 @@ nextstate = $state")
         push!(bs, b)
         push!(is, i)
     end
-    return θs, ps, qs, os, bs, is, fig
+    return θs, ps, qs, os, bs, is, fig, state
 end
 
-θs, ps, qs, os, bs, is, fig = LineLovasz()
+θs, ps, qs, os, bs, is, fig, state = LineLovasz()
 
-cat(0:length(ps)-1,round.(Int,(θs - 2π*(θs .> π))*180/π),ps,qs,os,bs,is,dims=2)
+cat(0:length(ps)-1,push!([is[i] == 0 ? :rotate : :slide for i = 2:length(is)],state),round.(θs, digits=3), round.((θs - 2π*(θs .> π))*180/π, digits=1),ps,qs,os,bs,is,dims=2)
 

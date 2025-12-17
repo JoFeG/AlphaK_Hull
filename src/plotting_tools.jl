@@ -34,7 +34,13 @@ function PlotCapableArc!(
     β_0 = pang(atan(x_0 - c))
     β_1 = pang(atan(x_1 - c))
 
-    β = LinRange(β_0, β_1, 60)
+    β = range(β_0, β_1, step = o * 0.01)
+    if length(β) == 0
+        β = range(β_0, β_1 - 2π, step = o * 0.01)
+        if length(β) == 0
+            β = range(β_0 - 2π, β_1, step = o * 0.01)
+        end
+    end
     
     plot!(
         c[1] .+ r*cos.(β), 
@@ -58,8 +64,13 @@ function PlotCapableArc!(
     c = CapableArcCenter(α, p, q, o = o)
     r = sqrt(sum((c - p).^2))
     
-    β_0 = atan(p - c) + 2π
-    β = LinRange(β_0, β_0 + o * (2π - 2α), 60)
+    β_0 = pang(atan(p - c))
+    β_1 = pang(atan(q - c))
+    β = range(β_0, β_1, step = o * 0.01)
+    if length(β) == 0
+        β = range(β_0, β_1 - 2π, step = o * 0.01)
+    end
+    
     plot!(
         c[1] .+ r*cos.(β), 
         c[2] .+ r*sin.(β), 
