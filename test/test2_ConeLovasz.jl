@@ -45,13 +45,13 @@ nextstate = $state")
     
     fig = EmptyFig()
     PlotPointset!(P, indices = true)
-    PlotAlphaCone!(P[p,:], α, θ, color = :pink)
+#    PlotAlphaCone!(P[p,:], α, θ, color = :pink)
     display(fig)
     sleep(slp)
     COLOR = [:red,:green,:blue]
     COLORCOUNT = 1
     
-    while step ≤ 44
+    while step < 80
 ###### ROTATE STEP ###########################################################
         if state == :rotate
 
@@ -75,15 +75,33 @@ nextstate = $state")
             Ap = angles[p,:]
             Aq = angles[q,:]
             if o == 1
-                sector_4 = (pang(θ - α/2    ) .< Aq .< pang(Aq[p] - α    ))
-                sector_3 = (pang(θ - α/2 + π) .< Aq .< pang(Aq[p] - α + π)) .& indisk
-                sector_2 = (pang(θ + α/2 + π) .< Ap .< pang(Ap[q]        )) .& indisk .& (sector_3 .== false)
-                sector_1 = (pang(θ + α/2    ) .< Ap .< pang(Ap[q] + π    ))
+                pang(θ - α/2) < pang(Aq[p] - α) ? ϕ = 0 : ϕ = π
+                sector_4 = (pang(θ - α/2 + ϕ) .< pang.(Aq .+ ϕ) .< pang(Aq[p] - α + ϕ))
+                try sector_4[qs[end-1]] = false catch nothing end
+                
+                pang(θ - α/2 + π) < pang(Aq[p] - α + π) ? ϕ = 0 : ϕ = π
+                sector_3 = (pang(θ - α/2 + π + ϕ) .< pang.(Aq .+ ϕ) .< pang(Aq[p] - α + π + ϕ)) .& indisk
+                try sector_3[qs[end-1]] = false catch nothing end
+
+                pang(θ + α/2 + π) < pang(Ap[q]) ? ϕ = 0 : ϕ = π
+                sector_2 = (pang(θ + α/2 + π + ϕ) .< pang.(Ap .+ ϕ) .< pang(Ap[q] + ϕ)) .& indisk .& (sector_3 .== false)
+                
+                pang(θ + α/2) < pang(Ap[q] + π) ? ϕ = 0 : ϕ = π
+                sector_1 = (pang(θ + α/2 + ϕ) .< pang.(Ap .+ ϕ) .< pang(Ap[q] + π + ϕ))
             else
-                sector_4 = (pang(Aq[p] + α    ) .< Aq .< pang(θ + α/2    ))
-                sector_3 = (pang(Aq[p] + α + π) .< Aq .< pang(θ + α/2 + π)) .& indisk
-                sector_2 = (pang(Ap[q]        ) .< Ap .< pang(θ - α/2 + π)) .& indisk .& (sector_3 .== false)
-                sector_1 = (pang(Ap[q] + π    ) .< Ap .< pang(θ - α/2    ))
+                pang(Aq[p] + α) < pang(θ + α/2) ? ϕ = 0 : ϕ = π
+                sector_4 = (pang(Aq[p] + α + ϕ) .< pang.(Aq .+ ϕ) .< pang(θ + α/2 + ϕ))
+                try sector_4[qs[end-1]] = false catch nothing end
+                
+                pang(Aq[p] + α + π) < pang(θ + α/2 + π) ? ϕ = 0 : ϕ = π
+                sector_3 = (pang(Aq[p] + α + π + ϕ) .< pang.(Aq .+ ϕ) .< pang(θ + α/2 + π + ϕ)) .& indisk
+                try sector_3[qs[end-1]] = false catch nothing end   
+
+                pang(Ap[q]) < pang(θ - α/2 + π) ? ϕ = 0 : ϕ = π
+                sector_2 = (pang(Ap[q] + ϕ) .< pang.(Ap .+ ϕ) .< pang(θ - α/2 + π + ϕ)) .& indisk .& (sector_3 .== false)
+
+                pang(Ap[q] + π) < pang(θ - α/2) ? ϕ = 0 : ϕ = π
+                sector_1 = (pang(Ap[q] + π + ϕ) .< pang.(Ap .+ ϕ) .< pang(θ - α/2 + ϕ))
             end
             p_excluded =  (sector_1 .== false) .& (sector_2 .== false)
             q_excluded =  (sector_3 .== false) .& (sector_4 .== false)
@@ -132,6 +150,8 @@ step = $step
             b = $b
             i = $i
 nextstate = $state")
+
+#if step > 39
         if i == 0
         elseif (i == 5) & (is[end] == 0) ## CHECK HERE
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
@@ -140,6 +160,7 @@ nextstate = $state")
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
             COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
         end
+#end
         display(fig)
         sleep(slp)
 
@@ -152,11 +173,16 @@ nextstate = $state")
         push!(os, o)
         push!(bs, b)
         push!(is, i)
+        
+        if step > 1 && ps[end] == ps[1] && θs[end] ≥ θs[2] # CHECK pang in angle termination
+            println("BREAK")
+            break
+        end            
     end
     return θs, ps, qs, os, bs, is, fig, state
 end
 
 θs, ps, qs, os, bs, is, fig, state = LineLovasz()
 
-cat(0:length(ps)-1,push!([is[i] == 0 ? :rotate : :slide for i = 2:length(is)],state),round.(θs, digits=3), round.((θs - 2π*(θs .> π))*180/π, digits=1),ps,qs,os,bs,is,dims=2)
+RES = cat(0:length(ps)-1,push!([is[i] == 0 ? :rotate : :slide for i = 2:length(is)],state),round.(θs, digits=3), round.((θs - 2π*(θs .> π))*180/π, digits=1),ps,qs,os,bs,is,dims=2)
 

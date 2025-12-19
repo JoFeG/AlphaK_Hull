@@ -1,5 +1,5 @@
 function ConeSlidingNextPivot(
-        o::Integer, # Orientation shoul be 1 for counterclockwise, -1 for clockwise
+        o::Integer, # Orientation should be 1 for counterclockwise, -1 for clockwise
         p::Integer,
         q::Integer,
         α::Real,
