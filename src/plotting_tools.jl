@@ -22,7 +22,8 @@ function PlotCapableArc!(
         θ_1::Real;
         o = 1::Integer,
         color = :red::Symbol,
-        linestyle = :dash
+        linestyle = :dash,
+        linewidth = 1.0::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
     c = CapableArcCenter(α, p, q, o = o)
@@ -36,17 +37,24 @@ function PlotCapableArc!(
 
     β = range(β_0, β_1, step = o * 0.01)
     if length(β) == 0
-        β = range(β_0, β_1 - 2π, step = o * 0.01)
+        β_1 = β_1 - 2π
+        β = range(β_0, β_1, step = o * 0.01)
         if length(β) == 0
-            β = range(β_0 - 2π, β_1, step = o * 0.01)
+            β_1 = β_1 + 2π
+            β_0 = β_0 - 2π
+            β = range(β_0, β_1, step = o * 0.01)
         end
     end
-    
+    X_1 = c[1] .+ r*cos.(β) 
+    X_2 = c[2] .+ r*sin.(β)
+    push!(X_1, c[1] .+ r*cos.(β_1))
+    push!(X_2, c[2] .+ r*sin.(β_1))
     plot!(
-        c[1] .+ r*cos.(β), 
-        c[2] .+ r*sin.(β), 
+        X_1, 
+        X_2, 
         color = color,
         linestyle = linestyle,
+        linewidth = linewidth,
         label = false
     )
 end
@@ -58,7 +66,8 @@ function PlotCapableArc!(
         q::Vector{<:Real};
         o = 1::Integer,
         color = :red::Symbol,
-        linestyle = :dash
+        linestyle = :dash,
+        linewidth = 1.0::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
     c = CapableArcCenter(α, p, q, o = o)
@@ -68,14 +77,19 @@ function PlotCapableArc!(
     β_1 = pang(atan(q - c))
     β = range(β_0, β_1, step = o * 0.01)
     if length(β) == 0
-        β = range(β_0, β_1 - 2π, step = o * 0.01)
+        β_1 = β_1 - 2π
+        β = range(β_0, β_1, step = o * 0.01)
     end
-    
+    X_1 = c[1] .+ r*cos.(β) 
+    X_2 = c[2] .+ r*sin.(β)
+    push!(X_1, c[1] .+ r*cos.(β_1))
+    push!(X_2, c[2] .+ r*sin.(β_1))
     plot!(
-        c[1] .+ r*cos.(β), 
-        c[2] .+ r*sin.(β), 
+        X_1, 
+        X_2, 
         color = color,
         linestyle = linestyle,
+        linewidth = linewidth,
         label = false
     )
 end
@@ -87,12 +101,13 @@ function PlotLine!(
         pointmark = false::Bool,
         color = :red::Symbol,
         linestyle = :solid::Symbol,
+        linewidth = 1.0::Real,
         len = 10::Real
 )
     length(p) == 2 && length(q) == 2 || DimensionMismatch()
     
     θ = atan(q - p)
-    PlotLine!(p, θ, forwardmark = forwardmark, pointmark = pointmark, color = color, linestyle = linestyle, len = len)
+    PlotLine!(p, θ, forwardmark = forwardmark, pointmark = pointmark, color = color, linestyle = linestyle, linewidth = linewidth, len = len)
 end
 
 function PlotLine!(
@@ -102,6 +117,7 @@ function PlotLine!(
         pointmark = false::Bool,
         color = :red::Symbol,
         linestyle = :solid::Symbol,
+        linewidth = 1.0::Real,
         len = 10::Real
 )
     length(p) == 2 || DimensionMismatch()
@@ -120,6 +136,7 @@ function PlotLine!(
         [p[2] - len*sin(θ), p[2] + len*sin(θ)], 
         color = color,
         linestyle = linestyle,
+        linewidth = linewidth,
         label = false
     )
     if forwardmark

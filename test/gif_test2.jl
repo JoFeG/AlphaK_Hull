@@ -3,21 +3,18 @@ include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
 using Random
-Random.seed!(3)
+Random.seed!(5)
 
-n = 16
-P = rand(n,2)
+
+P = cat(rand(19,2), [0.75 0.15], dims = 1)
 angles = PointsetAngles(P)
 
-
-function LineLovasz()
+function LineLovasz(P, α, maxiter = 200)
     n = size(P)[1]
     slp = 0
-    
-    α = 13π/16
-    
+        
     θ = pang(-α/2)   
-    p = 5
+    p = 20
     q = 0
     o = 0
     b = 0
@@ -31,27 +28,18 @@ function LineLovasz()
     is = [i]
 
     state = :rotate
-    step = 0    
-    
-    println("
-step = $step
-            θ = $θ
-            p = $p
-            q = $q
-            o = $o
-            b = $b
-            i = $i
-nextstate = $state")
-    
+    step = 0
+    stopflag = false
+
     fig = EmptyFig()
     PlotPointset!(P, indices = true)
     PlotAlphaCone!(P[p,:], α, θ, color = :pink)
-    display(fig)
-    sleep(slp)
+    # display(fig)
+    # sleep(slp)
     COLOR = [:red,:green,:blue]
     COLORCOUNT = 1
     
-    while step < 200
+    while step < maxiter
 ###### ROTATE STEP ###########################################################
         if state == :rotate
 
@@ -106,11 +94,7 @@ nextstate = $state")
             p_excluded =  (sector_1 .== false) .& (sector_2 .== false)
             q_excluded =  (sector_3 .== false) .& (sector_4 .== false)
 
-            ## CHECK HERE
             try p_excluded[ps[end-1]] = true catch nothing end
-            #try p_excluded[qs[end-1]] = true catch nothing end
-            #try q_excluded[ps[end-1]] = true catch nothing end
-            #try q_excluded[qs[end-1]] = true catch nothing end
 
             r, i = ConeSlidingNextPivot(o, p, q, α, θ, Ap, Aq,
                     p_excluded = p_excluded,
@@ -139,19 +123,16 @@ nextstate = $state")
         end
 ##############################################################################
         
+        if stopflag
+            if p == ps[3] && θ == θs[3]
+                println("BREAK, step = $step")
+                break
+            else 
+                stopflag = false
+            end
+        end
 
 #### PLOTING #################################################################
-            println("
-step = $step
-            θ = $θ
-            p = $p
-            q = $q
-            o = $o
-            b = $b
-            i = $i
-nextstate = $state")
-
-#if step > 39
         if i == 0
         elseif (i == 5) & (is[end] == 0) ## CHECK HERE
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
@@ -160,9 +141,8 @@ nextstate = $state")
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
             COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
         end
-#end
-        display(fig)
-        sleep(slp)
+        # display(fig)
+        # sleep(slp)
 
 ##############################################################################
 
@@ -174,15 +154,19 @@ nextstate = $state")
         push!(bs, b)
         push!(is, i)
         
-        if step > 10 && ps[end] == ps[1] && θs[end] ≥ θs[2] # CHECK pang in angle termination
-            println("BREAK")
-            break
+        if step > 2 && ps[end] == ps[2]  && θs[end] ≥ θs[2] # CHECK pang in angle termination
+            stopflag = true
         end            
     end
     return θs, ps, qs, os, bs, is, fig, state
 end
 
-θs, ps, qs, os, bs, is, fig, state = LineLovasz()
 
-RES = cat(0:length(ps)-1,push!([is[i] == 0 ? :rotate : :slide for i = 2:length(is)],state),round.(θs, digits=3), round.((θs - 2π*(θs .> π))*180/π, digits=1),ps,qs,os,bs,is,dims=2)
+α = 13π/16
+anim = @animate for maxiter = 2:82
+    θs, ps, qs, os, bs, is, fig, state = LineLovasz(P, α, maxiter)
+end
 
+gif(anim, "./out/test2.gif", fps = 4)
+
+# RES = cat(0:length(ps)-1,push!([is[i] == 0 ? :rotate : :slide for i = 2:length(is)],state),round.(θs, digits=3), round.((θs - 2π*(θs .> π))*180/π, digits=1),ps,qs,os,bs,is,dims=2)
