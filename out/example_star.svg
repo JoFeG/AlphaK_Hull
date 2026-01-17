@@ -22,15 +22,15 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="pt"
      showgrid="false"
-     inkscape:zoom="2.9769196"
-     inkscape:cx="229.09587"
-     inkscape:cy="449.28993"
-     inkscape:window-width="1854"
-     inkscape:window-height="1011"
+     inkscape:zoom="11.907678"
+     inkscape:cx="531.0439"
+     inkscape:cy="471.16657"
+     inkscape:window-width="2494"
+     inkscape:window-height="1403"
      inkscape:window-x="66"
-     inkscape:window-y="340"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg58"
+     inkscape:current-layer="g7051"
      showguides="true">
     <inkscape:page
        x="0"
@@ -3082,11 +3082,13 @@
      transform="translate(-28.5)">
     <g
        id="g5519"
-       clip-path="url(#clipPath5716)">
+       clip-path="url(#clipPath5716)"
+       style="fill:#ff0000;fill-opacity:1">
       <path
          clip-rule="nonzero"
          d="m 467.58047,347.13176 h 2.92969 v 7.96875 h -2.92969 z m 0,0"
-         id="path3817" />
+         id="path3817"
+         style="fill:#ff0000;fill-opacity:1" />
     </g>
     <path
        style="fill:none;stroke:#cccccc;stroke-width:0.566929;stroke-linecap:round;stroke-dasharray:1.70079, 1.70079;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
