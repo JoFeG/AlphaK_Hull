@@ -3,21 +3,35 @@ include("../src/geometry_tools.jl")
 include("../src/ak_hull.jl")
 
 using Random
-Random.seed!(3)
+Random.seed!(2)
 
-n = 16
+n = 30
 P = rand(n,2)
+
+# P = [
+#     .04 .10
+#     .81 .02
+#     .98 .29
+#     .47 .51
+#     .13 .43
+#     .15 .24
+#     .215 .39
+#     .45 .23
+#     .83 .26
+# ]
+
 angles = PointsetAngles(P)
 
 
 function LineLovasz()
     n = size(P)[1]
-    slp = 1
+    slp = 0.0
     
-    α = 13π/16
+    #α = 9π/18
+    α = π/2
     
-    θ = pang(-α/2)   
-    p = 5
+    θ =  pang(-α/2)   
+    p = 11 # 16
     q = 0
     o = 0
     b = 0
@@ -51,7 +65,7 @@ nextstate = $state")
     COLOR = [:red,:green,:blue]
     COLORCOUNT = 1
     
-    while step < 200
+    while step < 500
 ###### ROTATE STEP ###########################################################
         if state == :rotate
 
@@ -174,7 +188,7 @@ nextstate = $state")
         push!(bs, b)
         push!(is, i)
         
-        if step > 10 && ps[end] == ps[1] && θs[end] ≥ θs[2] # CHECK pang in angle termination
+        if step > 30 && ps[end] == ps[1] && θs[end] ≥ θs[2] # CHECK pang in angle termination
             println("BREAK")
             break
         end            

@@ -7,6 +7,8 @@ Random.seed!(5)
 
 
 P = cat(rand(19,2), [0.75 0.15], dims = 1)
+
+
 angles = PointsetAngles(P)
 
 function LineLovasz(P, α, maxiter = 200)
@@ -163,6 +165,7 @@ end
 
 
 α = 13π/16
+#α = π/2
 anim = @animate for maxiter = 2:82
     θs, ps, qs, os, bs, is, fig, state = LineLovasz(P, α, maxiter)
 end
