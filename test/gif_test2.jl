@@ -38,8 +38,8 @@ function LineLovasz(P, α, maxiter = 200)
     PlotAlphaCone!(P[p,:], α, θ, color = :pink)
     # display(fig)
     # sleep(slp)
-    COLOR = [:red,:green,:blue]
-    COLORCOUNT = 1
+    COLOR = [:gray,:red,:green,:blue]
+    COLORCOUNT = 2
     
     while step < maxiter
 ###### ROTATE STEP ###########################################################
@@ -136,12 +136,14 @@ function LineLovasz(P, α, maxiter = 200)
 
 #### PLOTING #################################################################
         if i == 0
-        elseif (i == 5) & (is[end] == 0) ## CHECK HERE
+        elseif (i == 5) & (i == 0) ## CHECK HERE
+            o == 1 ? COLORCOUNT = 1 : nothing
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
-            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
+            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 2
         else
+            o == 1 ? COLORCOUNT = 1 : nothing
             PlotCapableArc!(α, P[ps[end],:], P[qs[end],:], θs[end], θ, o = o, color = COLOR[COLORCOUNT], linestyle = :solid)
-            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 1
+            COLORCOUNT < length(COLOR) ? COLORCOUNT += 1 : COLORCOUNT = 2
         end
         # display(fig)
         # sleep(slp)
@@ -156,7 +158,7 @@ function LineLovasz(P, α, maxiter = 200)
         push!(bs, b)
         push!(is, i)
         
-        if step > 2 && ps[end] == ps[2]  && θs[end] ≥ θs[2] # CHECK pang in angle termination
+        if step > 2 && ps[end] == ps[2] && pang(θs[end] - θs[2]) < 1e-5 # CHECK pang in angle termination
             stopflag = true
         end            
     end
